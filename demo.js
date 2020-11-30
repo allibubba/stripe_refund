@@ -1,19 +1,18 @@
+const CustomerCharges = require('./lib/CustomerCharges');
+
 const Stripe = require('stripe');
 const stripe = Stripe(process.env.STRIPE_API_KEY);
 const customerId = 'cus_GKXEZg3wJo4byK'
 
-const customer = async () => {
-  return await stripe.customers.retrieve(customerId);
-};
+// need to determine how we are getting customer id's (from Seth or programmatically)
+// const customer = async () => {
+//   return await stripe.customers.retrieve(customerId);
+// };
 
-const customerCharges = async () => {
-  return await stripe.charges.list({
-    customer: customerId,
-    limit: 1,
-  });
-};
 
-customerCharges().then((payload) => {
+let charges = new CustomerCharges(customerId, stripe)
+
+charges.fetchCharges({limit:3}).then((payload) => {
   const { data: chargeData } = payload;
 
   chargeData.forEach(charge => {

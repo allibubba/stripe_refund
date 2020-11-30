@@ -9,7 +9,9 @@ In terminal from the project root:
     docker build . -t stripe-bulk-refund
 
 ### Run
+```
 $ docker run -ti --rm \
 -v $PWD:/app \
 -e STRIPE_API_KEY=sk_test_xxx \
 stripe-bulk-refund demo
+```

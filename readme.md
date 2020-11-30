@@ -13,14 +13,3 @@ $ docker run -ti --rm \
 -v $PWD:/app \
 -e STRIPE_API_KEY=sk_test_xxx \
 stripe-bulk-refund demo
-
-
-
-
-
-
-
-$ docker run -ti --rm \
--v $PWD:/app \
--e STRIPE_API_KEY=sk_test_xxx \
-stripe-bulk-refund demo

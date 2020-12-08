@@ -17,7 +17,11 @@ describe('RefundService', () => {
 
   context('success', () => {
     before(() => {
-      stubStripe = sinon.stub(stripe.refunds, 'create').resolves("hello there")
+      stubStripe = sinon.stub(stripe.refunds, 'create')
+      .onFirstCall().resolves("hello there")
+      .onSecondCall().throws( function() {
+        throw new StripeCommError('charge_id', 'test');
+      })
     });
 
     after(() => {
@@ -32,15 +36,14 @@ describe('RefundService', () => {
 
     it('raises error', async () => {
       refundInstance = new RefundService('test', stripe, 10);
-      await expect(refundInstance.wtf()).to.be.rejectedWith(Error)
+      await expect(refundInstance.create()).to.be.rejectedWith(Error)
     });
 
 
     it('raises specific error', async () => {
       refundInstance = new RefundService('test', stripe, 10);
       try {
-        await refundInstance.wtf();
-        expect.fail();
+        await refundInstance.create();
       } catch(error) {
         expect(error).to.be.an.instanceOf(StripeCommError);
       }

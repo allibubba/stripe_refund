@@ -3,9 +3,11 @@ const ReportWriter = require('./lib/ReportWriter');
 
 const Stripe = require('stripe');
 const stripe = Stripe(process.env.STRIPE_API_KEY);
-const throttledQueue = require('throttled-queue');
 
-const intake = [
+const throttledQueue = require('throttled-queue');
+const throttle = throttledQueue(2, 1000);
+
+const chargeIds = [
   {"charge_id": "ch_1HrRv3KQX4KqDlTwahHSSagZ", "amount": 10 },
   {"charge_id": "ch_1HgDqBKQX4KqDlTwHReZtUR4", "amount": 10 },
   {"charge_id": "ch_1HVKnLKQX4KqDlTwFhFYoHDu", "amount": 10 },
@@ -13,13 +15,8 @@ const intake = [
   {"charge_id": "ch_1H8rCsKQX4KqDlTwjcCkW1nc", "amount": 10 }
 ]
 
-
-
-
 // 2 requests per second
-let throttle = throttledQueue(2, 1000);
-
-let refundIt = async (chargeId) => {
+const refund = async (chargeId) => {
   ref = new RefundService(chargeId, stripe, amount);
   try {
     await ref.create()
@@ -29,13 +26,12 @@ let refundIt = async (chargeId) => {
   }
 };
 
-// read intake file
-// for each charge
+// TODO: read intake file
 
 chargeIds.forEach(chargeId => {
   throttle(function() {
     try {
-      await refundIt(chargeId);
+      await refund(chargeId);
     } catch(error) {
       console.log('error', error);
     }

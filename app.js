@@ -19,12 +19,22 @@ const chargeIds = [
 const refund = async (chargeId) => {
   ref = new RefundService(chargeId, stripe, amount);
   try {
-    await ref.create()
+    var message = await ref.create()
   } catch(error) {
     // write report
-    new ReportWriter(error);
+    var message = formatError(err);
+  } finally {
+    console.log(message);
+    new ReportWriter(message);
   }
 };
+
+const formatError = (err) => {
+  return {
+    "status": "failed"
+    "error": err
+  };
+}
 
 // TODO: read intake file
 

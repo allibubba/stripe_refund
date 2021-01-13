@@ -17,5 +17,13 @@ describe('ReportWriter', () => {
       reportWriterInstance = new ReportWriter("test");
       expect(reportWriterInstance.message).to.equal("test");
     });
+
+    it('writes', () => {
+      let message = "never gonna give you up"
+      reportWriterInstance = new ReportWriter(message)
+      reportWriterInstance.write('0001');
+      reportWriterInstance.end()
+      expect(reportWriterInstance.message).to.equal(message);
+    });
   });
 });

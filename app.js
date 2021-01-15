@@ -7,7 +7,28 @@ const stripe = Stripe(process.env.STRIPE_API_KEY);
 const throttledQueue = require('throttled-queue');
 const throttle = throttledQueue(2, 1000);
 
-// samples
+const AWS = require('aws-sdk');
+
+// UPLOAD TO S3
+const uploadFile = (fileName = "tmp/esults.csv") => {
+  const fileContent = fs.readFileSync(fileName);
+  const s3 = new aws.S3();
+  const params = {
+    Bucket: stripe_refund,
+    Key: `refund_${new Date().toLocaleDateString('en-US').split('/').join('_')}.csv`,
+    Body: fileContent
+  };
+
+  s3.upload(params, function(err, data) {
+    if (err) {
+      throw err;
+    }
+    console.log(`File uploaded successfully. ${data.Location}`);
+  });
+};
+
+
+// DATA SAMPLE
 const chargeIds = [
   {"charge_id": "ch_1HrRv3KQX4KqDlTwahHSSagZ", "amount": 10 },
   {"charge_id": "ch_1HgDqBKQX4KqDlTwHReZtUR4", "amount": 10 },
@@ -40,3 +61,11 @@ chargeIds.forEach(chargeId => {
     }
   });
 });
+
+// CLOSE THE STREAM & UPLOAD
+reportWriter.end();
+uploadFile("tmp/esults.csv");
+console.log('∆ -------------------------------------')
+console.log('PROGRAM COMPLETE')
+console.log('∆ -------------------------------------')
+exit(0);

@@ -1,4 +1,5 @@
 const reportWriter = require('./lib/ReportWriter');
+const AWS = require('aws-sdk');
 
 let messageOne = {
   "id": "re_1I8qW82eZvKYlo2C3TOlqHdT",
@@ -45,3 +46,21 @@ try {
 } catch(e) {
   console.log('error', e);
 }
+
+const uploadFile = (fileName = "tmp/esults.csv") => {
+  const fileContent = fs.readFileSync(fileName);
+  const s3 = new aws.S3();
+  const params = {
+    Bucket: stripe_refund,
+    Key: `refund_${new Date().toLocaleDateString('en-US').split('/').join('_')}.csv`,
+    Body: fileContent
+  };
+
+  // Uploading files to the bucket
+  s3.upload(params, function(err, data) {
+    if (err) {
+      throw err;
+    }
+    console.log(`File uploaded successfully. ${data.Location}`);
+  });
+};
